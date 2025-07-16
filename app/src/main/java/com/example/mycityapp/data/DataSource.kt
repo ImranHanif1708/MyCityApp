@@ -7,7 +7,7 @@ import com.example.mycityapp.model.Cuisine
 import com.example.mycityapp.model.Museums
 import com.example.mycityapp.model.ReligiousSites
 
-object dataSource {
+object DataSource {
 
     val categories = listOf(
         CityCategory("Cuisine", R.drawable.cuisine),

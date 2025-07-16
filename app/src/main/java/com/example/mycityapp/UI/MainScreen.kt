@@ -17,30 +17,29 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mycityapp.R
-import com.example.mycityapp.data.dataSource
 import com.example.mycityapp.model.CityCategory
-import com.example.mycityapp.model.CitySpecials
 
 @Composable
-fun mainScreen(
+fun MainScreen(
     modifier: Modifier,
+    viewModel: CityViewModel,
     onCategoryClick: (CityCategory) -> Unit,
 ) {
-    val categories = dataSource.categories
+    val categories = viewModel.getCategories()
     LazyVerticalGrid(
         GridCells.Adaptive(minSize = 144.dp),
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = dimensionResource(R.dimen.padding_small))
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         items(categories) { category ->
             CategoryItem(
@@ -81,112 +80,12 @@ fun CategoryItem(
     }
 }
 
-@Composable
-fun CategoryContentScreen(
-    categoryName: String,
-    //category: CitySpecials,
-    onCategoryClick: (CitySpecials) -> Unit,
-) {
-    // This function can be used to display the content of a specific category
-    val items = dataSource.getCategoryDetails(categoryName)
-    LazyVerticalGrid(
-        GridCells.Adaptive(minSize = 144.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(R.dimen.padding_small))
-            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-    ) {
-        items(items) { it ->
-            CategoryDetail(
-                it.title,
-                it,
-                onCategoryClick = {onCategoryClick(it)}
-            )
-        }
-    }
-}
-
-
-@Composable
-fun CategoryDetail(
-    categoryName: String,
-    item : CitySpecials,
-    onCategoryClick: (CitySpecials) -> Unit,
-) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(dimensionResource(id = R.dimen.padding_small))
-        .clickable(onClick = {onCategoryClick(item)} ),
-    ) {
-        Column {
-            Image(
-                painter = painterResource(id = item.imageResId ),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .size(100.dp)
-            )
-            Text(
-                text = item.title,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
-            )
-        }
-    }
-}
-
-@Composable
-fun detailscreen(categoryName: String, categoryDesc : String, imgRes : Int) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_small))
-            .background(color = MaterialTheme.colorScheme.background),
-        horizontalAlignment = CenterHorizontally,
-    ) {
-        Image(
-            painter = painterResource(imgRes),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(200.dp)
-        )
-        Text(
-            text = categoryName,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
-        )
-        Text(
-            text = categoryDesc,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
-        )
-    }
-}
-
 @Preview
 @Composable
-fun mainScreenPreview() {
-    mainScreen(
+fun MainScreenPreview() {
+    MainScreen(
         modifier = Modifier.verticalScroll(rememberScrollState()),
+        viewModel = viewModel(),
         onCategoryClick = {}
-    )
-}
-@Preview
-@Composable
-fun ContentScreenPreview() {
-    CategoryContentScreen("Cuisine",
-        onCategoryClick = {}
-    )
-}
-
-@Preview
-@Composable
-fun detailScreenPreview() {
-    detailscreen("Cuisine",
-        "A slow-cooked beef stew flavored with spices, traditionally eaten at breakfast.",
-        R.drawable.nihari,
     )
 }
